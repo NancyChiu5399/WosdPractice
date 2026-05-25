@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>字音字型小測驗</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Nunito:wght@700;800;900&display=swap');
+
+  :root {
+    --primary: #5b8dee;
+    --primary-dark: #3a6bc4;
+    --accent2: #ab47bc;
+    --success: #43a047;
+    --danger: #e53935;
+    --gold: #f9a825;
+    --text: #2d2d2d;
+    --soft: #f5f7ff;
+    --card: #ffffff;
+    --border: #dde3f0;
+    --shadow: 0 4px 20px rgba(91,141,238,0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+    background: linear-gradient(180deg, #cce9ff 0%, #e8f5ff 40%, #c8f0d4 100%);
+    min-height: 100vh;
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ===== HOME ===== */
+  #home {
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    gap: 20px;
+  }
+
+  .home-title {
+    font-family: 'Nunito', 'Microsoft JhengHei', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 900;
+    color: var(--primary-dark);
+    text-align: center;
+    text-shadow: 3px 3px 0 rgba(91,141,238,0.2);
+    line-height: 1.2;
+  }
+  .home-sub { font-size: 1rem; color: #666; margin-top: 4px; text-align:center; }
+
+  .mascot {
+    font-size: 5rem;
+    animation: bounce 2s infinite ease-in-out;
+    filter: drop-shadow(0 8px 16px rgba(0,0,0,0.15));
+  }
+  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+
+  .home-btns { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 320px; }
+
+  .btn {
+    padding: 16px 28px;
+    border: none;
+    border-radius: 16px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+    cursor: pointer;
+    transition: transform 0.12s, box-shadow 0.12s;
+    letter-spacing: 0.03em;
+  }
+  .btn:active { transform: scale(0.96); }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #5b8dee, #3a6bc4);
+    color: white;
+    box-shadow: 0 6px 0 #2952a3, var(--shadow);
+  }
+  .btn-primary:hover { box-shadow: 0 8px 0 #2952a3; transform:translateY(-2px); }
+
+  .btn-parent {
+    background: linear-gradient(135deg, #ab47bc, #7b1fa2);
+    color: white;
+    box-shadow: 0 6px 0 #6a1080;
+  }
+  .btn-parent:hover { box-shadow: 0 8px 0 #6a1080; transform:translateY(-2px); }
+
+  .btn-secondary {
+    background: var(--card);
+    color: var(--primary);
+    border: 2px solid var(--border);
+    box-shadow: 0 4px 0 var(--border);
+  }
+  .btn-secondary:hover { box-shadow: 0 6px 0 var(--border); transform:translateY(-2px); }
+
+  .btn-success {
+    background: linear-gradient(135deg, #43a047, #2e7d32);
+    color: white;
+    box-shadow: 0 6px 0 #1b5e20;
+  }
+
+  .stars-display { font-size: 1.4rem; color: var(--gold); margin-top:4px; letter-spacing:3px; }
+
+  /* ===== PARENT SETUP ===== */
+  #parent-setup {
+    padding: 20px;
+    gap: 16px;
+    max-width: 500px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+  }
+  .page-title {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--primary-dark);
+  }
+  .back-btn {
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 700;
+    transition: transform 0.1s;
+    color: var(--primary);
+  }
+  .back-btn:hover { transform: scale(1.05); }
+
+  .card {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    border: 2px solid var(--border);
+  }
+  .card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 14px;
+  }
+
+  .char-input-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .char-input {
+    width: 70px;
+    padding: 12px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-size: 1.6rem;
+    font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+    text-align: center;
+    transition: border-color 0.2s;
+    color: var(--text);
+    background: var(--soft);
+  }
+  .char-input:focus { outline: none; border-color: var(--primary); }
+
+  .phonetic-input {
+    flex: 1;
+    min-width: 160px;
+    padding: 12px 16px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+    transition: border-color 0.2s;
+    color: var(--text);
+    background: var(--soft);
+  }
+  .phonetic-input:focus { outline: none; border-color: var(--primary); }
+
+  .char-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    max-height: 220px;
+    overflow-y: auto;
+    min-height: 60px;
+  }
+  .char-chip {
+    background: linear-gradient(135deg, #e8eeff, #d4e0ff);
+    border: 2px solid #a0b4f0;
+    border-radius: 12px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    animation: popIn 0.2s ease;
+  }
+  @keyframes popIn { from{transform:scale(0.8);opacity:0} to{transform:scale(1);opacity:1} }
+
+  .char-chip-phonetic { font-size: 0.85rem; color: #666; font-weight: 400; }
+  .chip-del {
+    background: #ffebee;
+    border: none;
+    border-radius: 8px;
+    color: var(--danger);
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 3px 7px;
+    font-weight: 700;
+    transition: background 0.15s;
+  }
+  .chip-del:hover { background: #ffcdd2; }
+
+  .empty-state { color: #aaa; text-align: center; padding: 24px; font-size: 0.95rem; width:100%; }
+
+  .hint-box {
+    background: #fff8e1;
+    border: 2px solid #ffe082;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    color: #795548;
+    line-height: 1.6;
+  }
+
+  /* ===== LEVEL SELECT ===== */
+  #level-select {
+    padding: 20px;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .level-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    width: 100%;
+    max-width: 420px;
+  }
+  .level-card {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    border: 3px solid var(--border);
+    box-shadow: 0 6px 0 var(--border);
+    transition: transform 0.12s, box-shadow 0.12s;
+  }
+  .level-card:hover { transform: translateY(-4px); box-shadow: 0 10px 0 var(--border); }
+  .level-card:active { transform: scale(0.96); }
+
+  .level-icon { font-size: 2.6rem; margin-bottom: 8px; }
+  .level-name { font-size: 0.95rem; font-weight: 700; color: var(--text); }
+  .level-desc { font-size: 0.75rem; color: #888; margin-top: 4px; }
+  .level-stars { font-size: 0.9rem; margin-top: 6px; }
+
+  .level-1 { border-color: #a5d6a7; box-shadow: 0 6px 0 #81c784; }
+  .level-2 { border-color: #90caf9; box-shadow: 0 6px 0 #64b5f6; }
+  .level-3 { border-color: #ffcc80; box-shadow: 0 6px 0 #ffa726; }
+  .level-4 { border-color: #ef9a9a; box-shadow: 0 6px 0 #e57373; }
+  .level-5 { border-color: #ce93d8; box-shadow: 0 6px 0 #ba68c8; grid-column: span 2; }
+
+  /* ===== QUIZ ===== */
+  #quiz {
+    padding: 20px;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .quiz-header {
+    width: 100%;
+    max-width: 480px;
+  }
+  .quiz-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .quiz-level-tag {
+    background: var(--primary);
+    color: white;
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+  .quiz-score-tag {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--gold);
+  }
+
+  .progress-bar {
+    background: var(--border);
+    border-radius: 20px;
+    height: 10px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    background: linear-gradient(90deg, #5b8dee, #43a047);
+    height: 100%;
+    border-radius: 20px;
+    transition: width 0.4s ease;
+  }
+
+  .quiz-card {
+    background: var(--card);
+    border-radius: 24px;
+    padding: 28px 24px;
+    box-shadow: var(--shadow);
+    border: 2px solid var(--border);
+    width: 100%;
+    max-width: 480px;
+    text-align: center;
+  }
+
+  .quiz-question-label {
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+
+  .big-char {
+    font-size: 5rem;
+    font-weight: 900;
+    color: var(--primary-dark);
+    margin: 10px 0;
+    line-height: 1;
+  }
+
+  .big-phonetic {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: var(--accent2);
+    margin: 10px 0;
+    letter-spacing: 0.1em;
+    min-height: 50px;
+  }
+
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 20px;
+  }
+  .option-btn {
+    padding: 16px 12px;
+    border: 3px solid var(--border);
+    border-radius: 16px;
+    background: var(--soft);
+    font-size: 1.4rem;
+    font-weight: 700;
+    font-family: 'Noto Sans TC', 'Microsoft JhengHei', sans-serif;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--text);
+    min-height: 64px;
+  }
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--primary);
+    background: #e8eeff;
+    transform: translateY(-2px);
+  }
+  .option-btn.correct {
+    background: #e8f5e9 !important;
+    border-color: var(--success) !important;
+    color: var(--success) !important;
+  }
+  .option-btn.wrong {
+    background: #ffebee !important;
+    border-color: var(--danger) !important;
+    color: var(--danger) !important;
+  }
+
+  .feedback-area {
+    font-size: 2rem;
+    margin-top: 14px;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .feedback-text {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--success);
+  }
+
+  /* ===== RESULT ===== */
+  #result {
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    gap: 18px;
+    text-align: center;
+  }
+  .result-emoji { font-size: 4.5rem; animation: bounce 1.5s infinite ease-in-out; }
+  .result-title { font-size: 2rem; font-weight: 900; color: var(--primary-dark); }
+  .result-stars { font-size: 2.5rem; margin: 4px 0; letter-spacing: 6px; }
+  .result-score { font-size: 1rem; color: #555; }
+  .result-detail {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 16px 20px;
+    box-shadow: var(--shadow);
+    border: 2px solid var(--border);
+    width: 100%;
+    max-width: 380px;
+    max-height: 240px;
+    overflow-y: auto;
+  }
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.95rem;
+    gap: 8px;
+  }
+  .detail-row:last-child { border-bottom: none; }
+  .correct-mark { color: var(--success); font-weight: 700; }
+  .wrong-mark { color: var(--danger); font-weight: 700; }
+
+  .result-btns { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 320px; }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: #333; color: white; border-radius: 12px; padding: 12px 24px;
+    font-size: 0.95rem; font-weight: 600; z-index: 999;
+    opacity: 0; transition: opacity 0.3s;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+
+  .q-counter { font-size: 0.8rem; color: #888; text-align: right; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<!-- ===== HOME ===== -->
+<div id="home" class="screen active">
+  <div class="mascot">🐼</div>
+  <div>
+    <div class="home-title">字音字型<br>小測驗</div>
+    <div class="home-sub">快樂學習每一天！</div>
+  </div>
+  <div id="home-stars" class="stars-display">☆☆☆☆☆</div>
+  <div class="home-btns">
+    <button class="btn btn-primary" onclick="goTo('level-select')">🎮 開始測驗！</button>
+    <button class="btn btn-parent" onclick="goTo('parent-setup')">🔐 家長設定</button>
+  </div>
+</div>
+
+<!-- ===== PARENT SETUP ===== -->
+<div id="parent-setup" class="screen">
+  <div class="page-header" style="max-width:500px;width:100%;margin:0 auto">
+    <button class="back-btn" onclick="goTo('home')">← 返回</button>
+    <div class="page-title">🔐 家長設定字庫</div>
+  </div>
+
+  <div style="max-width:500px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:16px;flex:1;padding:0 20px 20px">
+    <div class="hint-box">
+      💡 輸入一個<b>國字</b>和它的<b>注音</b>，小孩在測驗時會用到這些字。<br>
+      注音例如：ㄓㄨㄥ、ㄕㄢ、ㄇㄚ（可以直接輸入注音符號）
+    </div>
+
+    <div class="card">
+      <div class="card-title">➕ 新增國字</div>
+      <div class="char-input-row">
+        <input class="char-input" id="new-char" maxlength="1" placeholder="字"
+          oninput="this.value=this.value.replace(/[^\u4e00-\u9fff]/g,'')">
+        <input class="phonetic-input" id="new-phonetic" maxlength="12" placeholder="注音（如：ㄓㄨㄥ）">
+        <button class="btn btn-success" style="padding:12px 16px;font-size:0.95rem" onclick="addChar()">新增</button>
+      </div>
+    </div>
+
+    <div class="card" style="flex:1">
+      <div class="card-title">📚 字庫（<span id="char-count">0</span> 個字）</div>
+      <div id="char-grid" class="char-grid">
+        <div class="empty-state">還沒有字哦！<br>請在上方新增國字 👆</div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="saveAndGo()" style="width:100%;padding:16px">✅ 儲存並返回首頁</button>
+  </div>
+</div>
+
+<!-- ===== LEVEL SELECT ===== -->
+<div id="level-select" class="screen">
+  <div class="page-header" style="width:100%;max-width:420px;margin:0 auto;padding:20px 20px 0">
+    <button class="back-btn" onclick="goTo('home')">← 返回</button>
+    <div class="page-title">🗺️ 選擇關卡</div>
+  </div>
+
+  <div style="padding:16px 20px;width:100%;max-width:420px;margin:0 auto;display:flex;flex-direction:column;gap:16px">
+    <div id="char-warning" style="display:none" class="hint-box">
+      ⚠️ 字庫太少！請家長至少輸入 <b>4 個字</b>才能開始測驗。
+    </div>
+    <div class="level-grid">
+      <div class="level-card level-1" onclick="startLevel(1)">
+        <div class="level-icon">🌱</div>
+        <div class="level-name">第一關</div>
+        <div class="level-desc">看字選注音</div>
+        <div class="level-stars" id="stars-1">☆☆☆</div>
+      </div>
+      <div class="level-card level-2" onclick="startLevel(2)">
+        <div class="level-icon">🌿</div>
+        <div class="level-name">第二關</div>
+        <div class="level-desc">看注音選國字</div>
+        <div class="level-stars" id="stars-2">☆☆☆</div>
+      </div>
+      <div class="level-card level-3" onclick="startLevel(3)">
+        <div class="level-icon">🌳</div>
+        <div class="level-name">第三關</div>
+        <div class="level-desc">聽音選字（計時）</div>
+        <div class="level-stars" id="stars-3">☆☆☆</div>
+      </div>
+      <div class="level-card level-4" onclick="startLevel(4)">
+        <div class="level-icon">⭐</div>
+        <div class="level-name">第四關</div>
+        <div class="level-desc">四選一注音</div>
+        <div class="level-stars" id="stars-4">☆☆☆</div>
+      </div>
+      <div class="level-card level-5" onclick="startLevel(5)">
+        <div class="level-icon">🏆</div>
+        <div class="level-name">挑戰關！混合測驗</div>
+        <div class="level-desc">所有題型混合，挑戰滿分！</div>
+        <div class="level-stars" id="stars-5">☆☆☆</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== QUIZ ===== -->
+<div id="quiz" class="screen">
+  <div class="quiz-header" style="padding:20px 20px 0">
+    <div class="quiz-meta">
+      <div class="quiz-level-tag" id="quiz-level-tag">第一關</div>
+      <button class="back-btn" onclick="if(confirm('確定要離開測驗嗎？'))goTo(\'level-select\')">✕ 離開</button>
+      <div class="quiz-score-tag">⭐ <span id="quiz-score">0</span> 分</div>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="quiz-progress" style="width:0%"></div>
+    </div>
+    <div class="q-counter">第 <span id="q-current">1</span> 題 / 共 <span id="q-total">10</span> 題</div>
+  </div>
+
+  <div style="padding:12px 20px 20px;width:100%;max-width:480px;margin:0 auto">
+    <div class="quiz-card">
+      <div class="quiz-question-label" id="quiz-question-label">這個字的注音是？</div>
+      <div class="big-char" id="quiz-char"></div>
+      <div class="big-phonetic" id="quiz-phonetic"></div>
+      <div class="options-grid" id="options-grid"></div>
+      <div class="feedback-area" id="feedback-area"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== RESULT ===== -->
+<div id="result" class="screen">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:24px;gap:16px;text-align:center;max-width:440px;margin:0 auto;width:100%">
+    <div class="result-emoji" id="result-emoji">🎉</div>
+    <div class="result-title" id="result-title">太棒了！</div>
+    <div class="result-stars" id="result-stars-display">☆☆☆</div>
+    <div class="result-score" id="result-score-text"></div>
+
+    <div class="result-detail" id="result-detail"></div>
+
+    <div class="result-btns">
+      <button class="btn btn-primary" onclick="retryLevel()">🔄 再玩一次</button>
+      <button class="btn btn-secondary" onclick="goTo('level-select')">🗺️ 選其他關卡</button>
+      <button class="btn btn-secondary" onclick="goTo('home')">🏠 回首頁</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== STATE =====
+let chars = [];
+let levelStars = {1:0, 2:0, 3:0, 4:0, 5:0};
+let currentLevel = 1;
+let questions = [];
+let currentQ = 0;
+let score = 0;
+let answers = [];
+
+const DEFAULT_CHARS = [
+  {char:'山', phonetic:'ㄕㄢ'},
+  {char:'水', phonetic:'ㄕㄨㄟ'},
+  {char:'火', phonetic:'ㄏㄨㄛ'},
+  {char:'木', phonetic:'ㄇㄨ'},
+  {char:'土', phonetic:'ㄊㄨ'},
+  {char:'日', phonetic:'ㄖˋ'},
+  {char:'月', phonetic:'ㄩㄝˋ'},
+  {char:'星', phonetic:'ㄒㄧㄥ'},
+  {char:'風', phonetic:'ㄈㄥ'},
+  {char:'雨', phonetic:'ㄩˇ'},
+  {char:'雲', phonetic:'ㄩㄣˊ'},
+  {char:'花', phonetic:'ㄏㄨㄚ'},
+];
+
+function loadData() {
+  try {
+    const saved = localStorage.getItem('charQuiz_chars');
+    chars = saved ? JSON.parse(saved) : [...DEFAULT_CHARS];
+    const savedStars = localStorage.getItem('charQuiz_stars');
+    if (savedStars) levelStars = JSON.parse(savedStars);
+  } catch(e) {
+    chars = [...DEFAULT_CHARS];
+  }
+}
+
+function saveData() {
+  try {
+    localStorage.setItem('charQuiz_chars', JSON.stringify(chars));
+    localStorage.setItem('charQuiz_stars', JSON.stringify(levelStars));
+  } catch(e) {}
+}
+
+// ===== NAVIGATION =====
+function goTo(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+  if (screenId === 'parent-setup') renderCharGrid();
+  if (screenId === 'level-select') {
+    renderLevelStars();
+    document.getElementById('char-warning').style.display = chars.length < 4 ? 'block' : 'none';
+  }
+  if (screenId === 'home') renderHomeStars();
+  window.scrollTo(0, 0);
+}
+
+// ===== HOME =====
+function renderHomeStars() {
+  const total = Object.values(levelStars).reduce((a,b)=>a+b,0);
+  const max = 15;
+  const filled = Math.round(total / max * 5);
+  let s = '';
+  for (let i=0;i<filled;i++) s+='⭐';
+  for (let i=filled;i<5;i++) s+='☆';
+  document.getElementById('home-stars').textContent = s;
+}
+
+// ===== PARENT SETUP =====
+function renderCharGrid() {
+  document.getElementById('char-count').textContent = chars.length;
+  const grid = document.getElementById('char-grid');
+  if (chars.length === 0) {
+    grid.innerHTML = '<div class="empty-state">還沒有字哦！<br>請在上方新增國字 👆</div>';
+    return;
+  }
+  grid.innerHTML = chars.map((c, i) => `
+    <div class="char-chip">
+      <span>${escHtml(c.char)}</span>
+      <span class="char-chip-phonetic">${escHtml(c.phonetic)}</span>
+      <button class="chip-del" onclick="delChar(${i})">✕</button>
+    </div>
+  `).join('');
+}
+
+function addChar() {
+  const c = document.getElementById('new-char').value.trim();
+  const p = document.getElementById('new-phonetic').value.trim();
+  if (!c) { showToast('⚠️ 請輸入一個國字！'); return; }
+  if (!p) { showToast('⚠️ 請輸入注音！'); return; }
+  if (chars.find(x => x.char === c)) { showToast('這個字已經在字庫中了！'); return; }
+  chars.push({char: c, phonetic: p});
+  document.getElementById('new-char').value = '';
+  document.getElementById('new-phonetic').value = '';
+  document.getElementById('new-char').focus();
+  renderCharGrid();
+  showToast(`✅ 「${c}」新增成功！`);
+}
+
+function delChar(i) {
+  const removed = chars[i].char;
+  chars.splice(i, 1);
+  renderCharGrid();
+  showToast(`「${removed}」已刪除`);
+}
+
+function saveAndGo() {
+  saveData();
+  showToast('儲存成功！✅');
+  setTimeout(() => goTo('home'), 600);
+}
+
+// ===== LEVELS =====
+function renderLevelStars() {
+  for (let i=1; i<=5; i++) {
+    const s = levelStars[i] || 0;
+    let str = '';
+    for(let j=0;j<s;j++) str += '⭐';
+    for(let j=s;j<3;j++) str += '☆';
+    document.getElementById(`stars-${i}`).textContent = str;
+  }
+}
+
+// ===== QUIZ =====
+function startLevel(level) {
+  if (chars.length < 4) {
+    showToast('⚠️ 至少需要 4 個字才能開始！請家長設定字庫。');
+    return;
+  }
+  currentLevel = level;
+  currentQ = 0;
+  score = 0;
+  answers = [];
+  questions = generateQuestions(level);
+  goTo('quiz');
+  renderQuestion();
+}
+
+function generateQuestions(level) {
+  const shuffled = [...chars].sort(() => Math.random() - 0.5);
+  const count = Math.min(10, shuffled.length);
+  const pool = shuffled.slice(0, count);
+
+  return pool.map(item => {
+    let type;
+    if (level === 1) type = 'char-to-phonetic';
+    else if (level === 2) type = 'phonetic-to-char';
+    else if (level === 3) type = 'phonetic-to-char';
+    else if (level === 4) type = 'char-to-phonetic';
+    else {
+      const types = ['char-to-phonetic', 'phonetic-to-char'];
+      type = types[Math.floor(Math.random() * types.length)];
+    }
+    return {item, type};
+  });
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  const total = questions.length;
+
+  const levelNames = ['', '第一關', '第二關', '第三關', '第四關', '🏆 挑戰關'];
+  document.getElementById('quiz-level-tag').textContent = levelNames[currentLevel];
+  document.getElementById('q-current').textContent = currentQ + 1;
+  document.getElementById('q-total').textContent = total;
+  document.getElementById('quiz-progress').style.width = `${(currentQ / total) * 100}%`;
+  document.getElementById('quiz-score').textContent = score;
+  document.getElementById('feedback-area').innerHTML = '';
+
+  const charEl = document.getElementById('quiz-char');
+  const phoneticEl = document.getElementById('quiz-phonetic');
+  const label = document.getElementById('quiz-question-label');
+  const grid = document.getElementById('options-grid');
+
+  if (q.type === 'char-to-phonetic') {
+    label.textContent = '這個字的注音是什麼？';
+    charEl.textContent = q.item.char;
+    charEl.style.display = 'block';
+    phoneticEl.style.display = 'none';
+
+    const correct = q.item.phonetic;
+    const wrongs = chars
+      .filter(c => c.char !== q.item.char)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 3)
+      .map(c => c.phonetic);
+    const options = shuffle([correct, ...wrongs]);
+
+    grid.innerHTML = options.map(opt => `
+      <button class="option-btn" onclick="checkAnswer(this, '${escAttr(opt)}', '${escAttr(correct)}')">
+        ${escHtml(opt)}
+      </button>
+    `).join('');
+
+  } else {
+    label.textContent = '這個注音是哪個字？';
+    phoneticEl.textContent = q.item.phonetic;
+    phoneticEl.style.display = 'block';
+    charEl.style.display = 'none';
+
+    const correct = q.item.char;
+    const wrongs = chars
+      .filter(c => c.char !== q.item.char)
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 3)
+      .map(c => c.char);
+    const options = shuffle([correct, ...wrongs]);
+
+    grid.innerHTML = options.map(opt => `
+      <button class="option-btn" onclick="checkAnswer(this, '${escAttr(opt)}', '${escAttr(correct)}')">
+        ${escHtml(opt)}
+      </button>
+    `).join('');
+  }
+}
+
+function checkAnswer(btn, chosen, correct) {
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach(b => b.disabled = true);
+
+  const isCorrect = chosen === correct;
+  const feedbackArea = document.getElementById('feedback-area');
+
+  if (isCorrect) {
+    btn.classList.add('correct');
+    score += 10;
+    document.getElementById('quiz-score').textContent = score;
+    const praises = ['🎉 答對了！', '🌟 太棒了！', '👏 超厲害！', '✨ 完美！', '🥳 好棒！'];
+    feedbackArea.innerHTML = `<span style="font-size:2rem">${praises[Math.floor(Math.random()*praises.length)]}</span>`;
+    feedbackArea.style.color = '#43a047';
+    answers.push({q: questions[currentQ], correct: true});
+  } else {
+    btn.classList.add('wrong');
+    // Show correct answer
+    btns.forEach(b => {
+      const t = b.textContent.trim();
+      if (t === correct) b.classList.add('correct');
+    });
+    feedbackArea.innerHTML = `<span style="font-size:1.5rem">😅 答錯了，正確答案是 <b style="color:#ab47bc">${escHtml(correct)}</b></span>`;
+    feedbackArea.style.color = '#e53935';
+    answers.push({q: questions[currentQ], correct: false});
+  }
+
+  setTimeout(() => {
+    currentQ++;
+    if (currentQ < questions.length) {
+      renderQuestion();
+    } else {
+      showResult();
+    }
+  }, 1200);
+}
+
+function showResult() {
+  const total = questions.length;
+  const correctCount = answers.filter(a => a.correct).length;
+  const pct = correctCount / total;
+
+  let stars = 0;
+  if (pct >= 0.9) stars = 3;
+  else if (pct >= 0.6) stars = 2;
+  else if (pct >= 0.3) stars = 1;
+
+  levelStars[currentLevel] = Math.max(levelStars[currentLevel] || 0, stars);
+  saveData();
+
+  let emoji = '😊', title = '繼續加油！';
+  if (pct >= 0.9) { emoji = '🏆'; title = '太厲害了！'; }
+  else if (pct >= 0.7) { emoji = '🎉'; title = '很棒哦！'; }
+  else if (pct >= 0.5) { emoji = '👍'; title = '不錯！再練習！'; }
+  else { emoji = '💪'; title = '加油！下次更好！'; }
+
+  document.getElementById('result-emoji').textContent = emoji;
+  document.getElementById('result-title').textContent = title;
+
+  let starStr = '';
+  for(let i=0;i<stars;i++) starStr += '⭐';
+  for(let i=stars;i<3;i++) starStr += '☆';
+  document.getElementById('result-stars-display').textContent = starStr;
+  document.getElementById('result-score-text').textContent =
+    `答對 ${correctCount} / ${total} 題　得分：${score} 分`;
+
+  const detail = answers.map(a => `
+    <div class="detail-row">
+      <span><b>${escHtml(a.q.item.char)}</b> ${escHtml(a.q.item.phonetic)}</span>
+      <span class="${a.correct ? 'correct-mark' : 'wrong-mark'}">${a.correct ? '✅ 正確' : '❌ 錯誤'}</span>
+    </div>
+  `).join('');
+  document.getElementById('result-detail').innerHTML = detail;
+
+  goTo('result');
+}
+
+function retryLevel() {
+  startLevel(currentLevel);
+}
+
+// ===== UTILS =====
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function escAttr(s) {
+  return String(s)
+    .replace(/'/g, '&#39;')
+    .replace(/"/g, '&quot;');
+}
+
+let toastTimer = null;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// Handle Enter key in parent setup
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const screen = document.querySelector('.screen.active');
+    if (screen && screen.id === 'parent-setup') addChar();
+  }
+});
+
+// ===== INIT =====
+loadData();
+renderHomeStars();
+</script>
+</body>
+</html>
